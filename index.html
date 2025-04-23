@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">  
+    <link href="style.css?version=COMMITHASH" rel="stylesheet" type="text/css">
+    <link rel="icon" href="images/favicon.ico" sizes="any" />
+    <title>Flashmots</title>
+  </head>
+    <body>
+        <div id="zone_1">
+          <span class="menu_encadre">            
+            <span class="titre_menu_encadre">⏳️ Lecture</span>
+            <br>
+            <input type="range" id="delai_lecture" class="glissiere" title="Temps d'affichage du mot" name="delai_lecture" step="0.1" min="1" max="9" onchange="maj_delai_lecture(this.value)">
+            <br>
+            <span class="titre_menu_encadre">⏳️ Mémoire</span>
+            <br>
+            <input type="range" id="delai_memoire" class="glissiere" title="Temps de mémorisation pendant lequel le mot est masqué" name="delai_memoire" step="0.1" min="0" max="10" onchange="maj_delai_memoire(this.value)">
+            <br>
+            <input type="checkbox" id="checkbox-dictee-vocale"  title="Désactiver l'affichage du modèle et le temps de mémorisation" name="checkbox-dictee-vocale" onchange="change_dictee_vocale()">
+            <label class="titre_menu_encadre" for="checkbox-dictee-vocale" title="Désactiver l'affichage du modèle et le temps de mémorisation">Dictée vocale</label> 
+          </span>
+          <span class="menu_encadre">
+            <span class="titre_menu_encadre">📑 Liste</span>
+            <br>        
+          <select id="choix_liste" onchange="change_liste()"></select>
+          <button id="bouton_editer" title="Voir et modifier cette liste ..." onclick="boite_liste_perso()">Éditer...</button>
+          <br>
+          <button id="bouton_enregistrer" title="Enregister la liste reçue par lien dans la liste personnalisée" onclick="enregistrer()">Enregistrer</button>
+          </span>
+          
+          <span class="menu_encadre">
+            <span class="titre_menu_encadre">Mots</span>
+            <br>
+            <input type="number" id="choix_nb_mots" class="nombre" title="Pour cet exercice, nombre de mots tirés au sort dans la liste" name="choix_nb_mots" step="1" min="1" onchange="nb_mots(this.value)">
+            <br>
+            <span class="titre_menu_encadre" id="max"></span>
+
+          </span>
+
+          <span class="boutons_menu menu_encadre" id="zone_bouton_clavier">
+            <button id="bouton_clavier" name="bouton_clavier" onclick="change_affichage_clavier()"></button>
+          </span>
+
+          <span class="boutons_menu menu_encadre">
+            <button type="button" class="bouton_choix" id="bouton_options" onclick="lightbox('fenetre_options')"></button>
+            <button type="button" class="bouton_choix" id="bouton_apropos" onclick="lightbox('fenetre_apropos')"></button>
+          </span>
+
+
+        </div>
+
+
+        <div id="zone_2">
+
+          <div id="zone-progression"></div>
+
+          <button id="haut_parleur" class="bouton_transp" type="button" onclick="reglage_son()"></button>
+          <button id="consigne" class="bouton_transp" type="button" onclick="consigne()"></button>          
+          
+          <div id="progress">            
+            <div id="bar"></div>
+          </div>
+          <div id="entendre_voir">
+            <button id="entendre" class="bouton_transp" type="button" onclick="ecouter()"></button>
+            <button id="voir" class="bouton_transp" type="button" onclick="nouveau_mot('revoir')"></button>
+            <button id="arreter" class="bouton_transp" type="button" onclick="debut()"></button>
+          </div>
+          <div id="zone_centrale">
+            <div id="zone_debut">Commencer</div>
+            <div id="zone_mot">           
+            </div>
+            <div id="zone_interrogation">
+              <input type="text" id="zone_reponse" class="zone_reponse" name="zone_reponse" oninput="check_zone_reponse()">
+              <span id="zone_reponse_tactile" class="zone_reponse"></span>
+              <button type="button" id="validation_reponse" onclick="verification_reponse(zone_reponse.value)"></button>
+            </div>                
+          </div>
+
+
+ 
+        </div>
+
+        <div id="fenetre_apropos" class="lightbox ombre-portee">
+          <input class="bouton_quitter bouton" type="button" style="float: right;background-image:url(images/bouton_fermer.svg);position:sticky;left:calc(100% - 38px);top:0px;" onclick="lightbox_ferme('fenetre_apropos')">
+          <h3>À propos de Flashmots</h3>
+          <audio controls class="bouton_ecoute" src="sons/apropos.ogg" type="audio/mpeg"></audio>
+          <div class="texte_defilable" style="height: 90%;">
+            <p>Flashmots une application dédiée à la mémorisation orthographique.</p>
+            <p>Un mot est affiché (temps de lecture), puis caché (temps de mémorisation), l'élève doit ensuite l'écrire à l'identique.</p>
+            <p>Les délais de lecture et de mémorisation sont réglables via des curseurs. Ils s'adaptent aussi automatiquement à la longueur du mot.</p>
+            <p>Cinq listes de mots invariables sont proposées par niveaux du CP au CM2, à titre indicatif. Chaque liste est éditable, vous pouvez ainsi ajouter et supprimer des mots.</p>
+            <p>Une liste dite "personnalisée", vide par défaut, est également disponible.</p>
+            <p>Il est possible, à partir d'une liste donnée, de créer un lien partageable. En envoyant ce lien à quelqu'un d'autre, par exemple par email, il ou elle démarrera directement Flashmots avec cette liste de mots. Les liens créés n'ont pas de limite de durée, rien n'est stocké sur le serveur, les mots sont contenus dans le lien lui-même. </p>
+            <p>Avant de commencer un exercice, choisissez le nombre de mots à travailler, dans la limite du contenu de la liste. (Par défaut 10 mots sauf liste personnalisée)</p>
+            <p>En fin d'exercice, Flashmots affiche un résumé avec les mots travaillés, le nombre d'essais réalisés pour chacun et le nombre de vues demandées.</p>
+            <p>L'application fonctionne avec un simple navigateur web, elle est donc en principe utilisable sur ordinateur, tablette et téléphone.</p>
+            <p>Flashmots est développée par Arnaud Champollion, et partagée sous licence libre GNU/GPL. Cela signifie que vous pouvez l'utiliser pour tout usage y compris commercial sans restriction, et même en faire des copies voire les installer sur d'autres sites, éventuellement avec vos adaptations. Tout ce que vous devez faire est d'en citer l'auteur original, la licence, et publier votre version dérivée sous les mêmes conditions. Le code source est déposé sur <a href="https://forge.apps.education.fr/">la forge des Communs Numériques</a></p>
+            <p>Pour en savoir plus et télécharger une version hors-ligne, suggérer des améliorations, rapporter des bugs, consulter le code source voire participer au développement ... consultez <a href="https://forge.apps.education.fr/educajou/flashmots">la page du projet Flashmots sur la forge</a>.</p>
+            <p><a href="https://stocksnap.io/photo/office-supplies-ILDGSIYA6R">Image "crayons"</a> par <a href="https://stocksnap.io/author/artsandcrafts">Artsy Crafty</a> sur <a href="https://stocksnap.io">StockSnap</a>, licence Creative Commons CC0</p>
+            <p><a href="https://stocksnap.io/photo/lake-landscape-0AOWP6PJ4Q">Image "lac"</a> by <a href="https://stocksnap.io/author/jjsky">JJ Skys the Limit</a> sur <a href="https://stocksnap.io">StockSnap</a>, licence Creative Commons CC0</p>
+            <p><a href="https://stocksnap.io/photo/top-workspace-Y2HGM8Q5BC">Image "feuille blanche"</a> by <a href="https://stocksnap.io/author/artsandcrafts">Artsy Crafty</a> sur <a href="https://stocksnap.io">StockSnap</a>, licence Creative Commons CC0</p>
+            <p>Enregistrements sonores <a href="https://commons.wikimedia.org/wiki/Category:French_pronunciation?uselang=fr">Wikimedia Commons</a>, licence Creative Commons BY SA, d'après <a href="https://fr.wiktionary.org/wiki/Wiktionnaire:Page_d%E2%80%99accueil">Wikitionnaire</a>.</p>
+            <p>Remerciements à <a href="https://eyssette.github.io/">Cédric Eyssette</a> pour les nombreuses aides apportées et l'intégration des mots de Wikimedia Commons</p>
+          </div>
+          </div>
+          
+          <div id="fenetre_options" class="lightbox ombre-portee">
+            <input class="bouton_quitter bouton" type="button" style="float: right;background-image:url(images/bouton_fermer.svg);position:sticky;left:calc(100% - 38px);top:0px;" onclick="lightbox_ferme('fenetre_options')">
+            <h3>Options</h3>
+            <div class="texte_defilable">
+              <p>
+                Fond d'écran
+                <select id="fond" style="text-align: center; transition: left 1s;" name="fond" onchange="change_fond(this.value)">
+                  <option value="url(images/fonds/Primtux.jpg)">Primtux</option>
+                  <option value="url(images/fonds/crayons.jpg)">Crayons</option>
+                  <option value="url(images/fonds/lac.jpg)">Lac</option>
+                  <option value="url(images/fonds/feuille_blanche.jpg)">Feuille blanche</option>
+                  <option value="none">Aucun</option>
+                </select>
+              </p>
+              <p>
+                Synthèse vocale (si disponible sur l'appareil)
+                <select id="langue" style="text-align: center; transition: left 1s;" name="langue" onchange="change_langue()">
+                  <option value="de-DE">🇩🇪 Allemand</option>
+                  <option value="fr-FR">🇫🇷 Français</option>
+                  <option value="en-GB">🇬🇧 Anglais UK</option>
+                  <option value="en-US">🇺🇲 Anglais US</option>
+                  <option value="es-ES">🇪🇸 Espagnol ES</option>
+                  <option value="es-AR">🇦🇷 Espagnol AR</option>
+                  <option value="it-IT">🇮🇹 Italien</option>
+                  <option value="nl-NL">🇳🇱 Néerlandais</option>                  
+                </select>
+              </p>
+              <div id="option_wikimedia">
+                <p>
+                  <input type="checkbox" id="voix_enregistrees" name="voix_enregistrees" onchange="change_wikimedia()">
+                  <label for="voix_enregistrees">Voix enregistrées</label> 
+                </p>
+                <p></p>  
+                  Si cette case est cochée, le mot sera prononcé autant que possible par une voix humaine, depuis la collection d'enregistrements de <a href="https://commons.wikimedia.org/wiki/Category:French_pronunciation?uselang=fr">Wikimedia Commons</a>.
+                </p>
+              </div>
+              <p>
+              Casse des modèles
+              <select id="choix_casse_modele" style="text-align: center; transition: left 1s;" name="choix_casse_modele" onchange="change_casse_modele('manuel')">
+                <option value="maj">TOUT EN MAJUSCULES</option>
+                <option value="min">tout en minuscules</option>
+                <option value="auto">Selon la liste</option>                
+              </select>
+              </p>
+              <p>
+              Casse de saisie
+              <select id="choix_casse_reponse" style="text-align: center; transition: left 1s;" name="choix_casse_reponse" onchange="change_casse_reponse('manuel')">
+                <option value="maj">MAJUSCULES FORCÉES</option>
+                <option value="min">minuscules forcées</option>
+                <option value="auto">Manuelle</option>                
+              </select>
+              </p>
+              <input type="checkbox" id="choix_tolerance" name="choix_tolerance" onchange="change_tolerance()">
+              <label for="choix_tolerance">Tolérer les erreurs de casse</label>                      
+              <p></p>  
+              Si cette case est cochée, les réponses seront validées même si elles ne respectent pas la casse.
+              <p></p>
+              <input type="checkbox" id="choix_memoire_reponse" name="choix_memoire_reponse" onchange="change_memoire_reponse()">
+              <label for="choix_memoire_reponse">Ne pas effacer la réponse</label>                      
+              <p></p>  
+              Si cette case est cochée, les lettres déjà saisies par l'élève ne seront pas effacées s'il demande un nouvel affichage du modèle.
+            </div>
+            </div>
+
+
+
+        <div class="virtual-keyboard" id="virtual_keyboard">
+          <div id="accents"class="rangee">
+            <button onclick="appendCharacter('À')">À</button>
+            <button onclick="appendCharacter('Æ')">Æ</button>
+            <button onclick="appendCharacter('É')">É</button>
+            <button onclick="appendCharacter('È')">È</button>
+            <button onclick="appendCharacter('Ç')">Ç</button>
+            <button onclick="appendCharacter('Œ')">Œ</button>
+            <button onclick="appendCharacter('Ù')">Ù</button>
+            <button id="bouton_circonflexe" onclick="circonflexe()">^</button>
+            <button id="bouton_trema" onclick="trema()">¨</button>
+            <button onclick="appendCharacter('-')">-</button>
+          </div>
+          <div id="nombres"class="rangee" style="display: none;">
+            <button onclick="appendCharacter('1')">1</button>
+            <button onclick="appendCharacter('2')">2</button>
+            <button onclick="appendCharacter('3')">3</button>
+            <button onclick="appendCharacter('4')">4</button>
+            <button onclick="appendCharacter('5')">5</button>
+            <button onclick="appendCharacter('6')">6</button>
+            <button onclick="appendCharacter('7')">7</button>
+            <button onclick="appendCharacter('8')">8</button>
+            <button onclick="appendCharacter('9')">9</button>
+            <button onclick="appendCharacter('0')">0</button>
+          </div>
+          <div class="rangee">
+            <button id="a" value='A' onclick="appendCharacter(this.value)">A</button>
+            <button onclick="appendCharacter('Z')">Z</button>
+            <button id="e" value='E' onclick="appendCharacter(this.value)">E</button>
+            <button onclick="appendCharacter('R')">R</button>
+            <button onclick="appendCharacter('T')">T</button>
+            <button onclick="appendCharacter('Y')">Y</button>
+            <button id="u" value='U' onclick="appendCharacter(this.value)">U</button>
+            <button id="i" value='I' onclick="appendCharacter(this.value)">I</button>
+            <button id="o" value='O' onclick="appendCharacter(this.value)">O</button>
+            <button onclick="appendCharacter('P')">P</button>
+          </div>
+          <div class="rangee">
+            <button onclick="appendCharacter('Q')">Q</button>
+            <button onclick="appendCharacter('S')">S</button>
+            <button onclick="appendCharacter('D')">D</button>
+            <button onclick="appendCharacter('F')">F</button>
+            <button onclick="appendCharacter('G')">G</button>
+            <button onclick="appendCharacter('H')">H</button>
+            <button onclick="appendCharacter('J')">J</button>
+            <button onclick="appendCharacter('K')">K</button>
+            <button onclick="appendCharacter('L')">L</button>
+            <button onclick="appendCharacter('M')">M</button>
+          </div>
+          <div class="rangee">
+            <button id="bouton_maj"  class="fonction" style="width: calc(15% - 2px); background-image: url(images/minuscules.svg);" onclick="min_maj()"></button>
+            <button onclick="appendCharacter('W')">W</button>
+            <button onclick="appendCharacter('X')">X</button>
+            <button onclick="appendCharacter('C')">C</button>
+            <button onclick="appendCharacter('V')">V</button>
+            <button onclick="appendCharacter('B')">B</button>
+            <button onclick="appendCharacter('N')">N</button>
+            <button onclick="appendCharacter('\'')">'</button>
+            <button style="width: calc(15% - 2px);background-color: rgb(249, 141, 73);"  class="fonction" onclick="efface_lettre()">⌫</button>
+          </div>
+          <div id="bas" class="rangee">
+            <button id="bouton_nombres" class="fonction" style="width: calc(15% - 2px);" onclick="nombres_accents()">123</button>
+            <button onclick="appendCharacter(',')">,</button>
+            <button style="width: calc(50% - 2px);" onclick="appendCharacter('&nbsp')"></button>
+            <button onclick="appendCharacter('.')">.</button>
+            <button style="width: calc(15% - 2px);background-color: rgb(101, 101, 255);" onclick="verification_reponse(zone_reponse.value)">↲</button>
+          </div>
+        </div>
+
+        <div id="zone_fin" class="lightbox ombre-portee">
+          <input class="bouton_quitter" type="button" onclick="lightbox_ferme('zone_fin')">
+          <h3>Exercice terminé</h3>
+          <h4>Légende</h4>
+          <p><span class="resultat">👁️ Nombre d'affichages</span></p>
+          <p><span class="resultat un">1 essai</span><span class="resultat deux">2 essais</span><span class="resultat trois">3 essais</span><span class="resultat quatre">4 essais</span><span class="resultat echec">échoué</span></p>
+          <h4>Résultats</h4>
+          <p id="mots_demandes"></p>
+          <button type="button" id="recomencer_meme_serie" onclick="debut('autre')">Refaire la même série</button>
+          <button type="button" id="recomencer_nouvelle_serie" onclick="debut()">Refaire une autre série</button>
+
+
+
+        </div> 
+
+        <div id="liste_personnalisee" class="lightbox ombre-portee texte_defilable">
+          <input class="bouton_quitter" type="button" onclick="lightbox_ferme('liste_personnalisee')">
+          <h3>Éditer <span id="nom_liste"></span></h3>
+          <p>Un mot ou expression par ligne</p>
+          <textarea id="saisie_liste" name="saisie_liste" placeholder="mot1&#10mot2&#10mot3&#10..." rows="10"></textarea>
+          <br>
+          <button type="button" id="bouton_effacer" onclick="efface_liste()">🗑️ Vider</button>
+          <button type="button" id="bouton_reset" onclick="reset_liste()">Réinitialiser</button>
+          <button type="button" id="bouton_appliquer" onclick="maj_liste()">Appliquer</button>
+          <button type="button" id="bouton_OK" onclick="maj_liste();lightbox_ferme('liste_personnalisee');debut()">OK</button>
+          <button type="button" id="partager" onclick="partager_exercice()">🔗 Partager</button>
+          <div id="zone_partage">
+            <p style="margin-top: 0px;margin-bottom: 5px;">Lien à partager, qui permet de démarrer Flashmots avec cette liste de mots </p>
+            <p id="lien_a_partager"></p>
+            <button type="button" id="copy" onclick="copie_lien()">Copier le lien</button>
+            <button type="button" id="mail" onclick="envoie_mail()">Envoyer par mail</button>
+            <button type="button" id="boutonqr" onclick="ouvre(divQrcode);">Code QR</button>
+            <button type="button" id="lancer" onclick="lance_lien()">Démarrer dans un nouvel onglet</button>
+          </div>
+        </div>
+
+
+        <!-- Darkbox pour fond sombre -->
+        <div id="darkbox" class="hide"></div>
+
+
+        <!-- Section QR Code (indépendante) -->
+        <div id="div-qrcode" class="lightboxnew hide">
+          <div id="entete-qrcode">
+              <button id="bouton-fermer-qrcode" onclick="ferme(divQrcode)">X</button>
+          </div>
+          <div id="zone-qrcode"></div>
+          <div id="pied-qrcode">
+              <button id="bouton-telecharger-qrcode" onclick="telechargerQrcode()">Télécharger</button>
+          </div>
+        </div>
+        
+
+        <button class="bouton_transp" id="bouton_replier" type="button" style="position: absolute; width: 49px; height: 49px;" onclick="visibilite_panneau('manuel')"></button>
+        <script src="urls.js?version=COMMITHASH"></script>
+        <script src="fonctions.js?version=COMMITHASH"></script>
+        <script src="qrcode-styling.js?version=COMMITHASH"></script>
+        <script src="script.js?version=COMMITHASH"></script>
+    </body>
+</html>  
